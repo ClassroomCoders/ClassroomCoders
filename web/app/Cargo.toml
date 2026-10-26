@@ -1,0 +1,16 @@
+[package]
+name = "app"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+async-nats = { version = "0.50.0", optional = true }
+game-views = { version = "0.1.0", path = "../game-views" }
+leptos = "0.8.22"
+leptos_meta = "0.8.7"
+leptos_router = "0.8.17"
+protocol = { version = "0.1.0", path = "../../crates/protocol" }
+serde = { version = "1.0.229", features = ["derive"] }
+
+[features]
+async-nats = ["dep:async-nats"]

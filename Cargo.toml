@@ -1,0 +1,27 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/game-core",
+    "crates/protocol",
+    "crates/sandbox",
+    "crates/services/auth",
+    "crates/services/game-server",
+    "crates/services/gateway",
+    "crates/services/realtime-gateway",
+    "crates/services/scheduler",
+    "crates/services/submissions",
+    "web/app",
+    "web/frontend",
+    "web/game-views",
+    "web/server",
+]
+
+[workspace.package]
+name = "class-coders"
+
+[profile.wasm-release]
+inherits = "release"
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
