@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = [
+members = ["crates/common",
     "crates/game-core",
     "crates/protocol",
     "crates/sandbox",
