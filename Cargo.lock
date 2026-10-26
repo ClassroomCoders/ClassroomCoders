@@ -647,6 +647,7 @@ dependencies = [
 name = "frontend"
 version = "0.1.0"
 dependencies = [
+ "app",
  "console_error_panic_hook",
  "leptos",
  "wasm-bindgen",
@@ -754,10 +755,6 @@ version = "0.1.0"
 dependencies = [
  "leptos",
 ]
-
-[[package]]
-name = "gateway"
-version = "0.1.0"
 
 [[package]]
 name = "generic-array"
@@ -2202,6 +2199,7 @@ dependencies = [
 name = "server"
 version = "0.1.0"
 dependencies = [
+ "app",
  "async-nats",
  "axum",
  "leptos",

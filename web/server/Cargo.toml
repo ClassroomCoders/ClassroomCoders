@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+app = { path = "../app", default-features = false, features = ["ssr"] }
 async-nats = "0.50.0"
 axum = { version = "0.8.9", features = ["ws"] }
 leptos = { version = "0.8.22", features = ["ssr"] }
