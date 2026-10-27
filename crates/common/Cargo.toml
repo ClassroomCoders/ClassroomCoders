@@ -4,3 +4,4 @@ edition = "2024"
 name = "common"
 
 [dependencies]
+async-nats = "0.50.0"
