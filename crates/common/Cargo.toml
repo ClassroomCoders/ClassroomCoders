@@ -3,5 +3,11 @@ version = "0.1.0"
 edition = "2024"
 name = "common"
 
+[features]
+# Postgres pool helpers. Off by default so crates that don't touch the
+# database (and anything reachable from the wasm frontend) skip sqlx.
+db = ["dep:sqlx"]
+
 [dependencies]
 async-nats = "0.50.0"
+sqlx = { workspace = true, optional = true }

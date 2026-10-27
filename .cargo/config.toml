@@ -1,0 +1,4 @@
+[env]
+# Dev database (deploy/compose.dev.yaml) for sqlx's compile-time query checks.
+# Doesn't override an already-set DATABASE_URL (process-compose, CI, a local .env).
+DATABASE_URL = "postgres://classcoders:classcoders@127.0.0.1:5433/classcoders"

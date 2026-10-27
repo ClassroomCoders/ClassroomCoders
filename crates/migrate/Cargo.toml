@@ -1,0 +1,9 @@
+[package]
+name = "migrate"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+common = { version = "0.1.0", path = "../common", features = ["db"] }
+sqlx = { workspace = true }
+tokio = { version = "1.54.1", features = ["rt-multi-thread", "macros"] }

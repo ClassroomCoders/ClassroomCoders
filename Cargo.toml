@@ -2,6 +2,7 @@
 resolver = "3"
 members = ["crates/common",
     "crates/game-core",
+    "crates/migrate",
     "crates/protocol",
     "crates/sandbox",
     "crates/services/auth",
@@ -14,6 +15,15 @@ members = ["crates/common",
     "web/game-views",
     "web/server",
 ]
+
+[workspace.dependencies]
+sqlx = { version = "0.9.0", default-features = false, features = [
+    "runtime-tokio",
+    "tls-rustls",
+    "postgres",
+    "macros",
+    "migrate",
+] }
 
 [profile.wasm-release]
 inherits = "release"

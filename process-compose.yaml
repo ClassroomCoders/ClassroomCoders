@@ -23,7 +23,18 @@ processes:
   # Build every service in one cargo invocation so shared deps compile once and
   # the services don't fight over the target/ lock.
   build-services:
-    command: cargo build -p auth -p game-server -p realtime-gateway -p scheduler -p submissions
+    command: cargo build -p migrate -p auth -p game-server -p realtime-gateway -p scheduler -p submissions
+    availability:
+      restart: "no"
+
+  # Apply pending migrations before any service starts.
+  migrate:
+    command: cargo run -p migrate
+    depends_on:
+      build-services:
+        condition: process_completed_successfully
+      infra:
+        condition: process_healthy
     availability:
       restart: "no"
 
@@ -32,10 +43,8 @@ processes:
   auth:
     command: cargo run -p auth
     depends_on: &service-deps
-      build-services:
+      migrate:
         condition: process_completed_successfully
-      infra:
-        condition: process_healthy
     availability: &service-availability
       restart: on_failure
       backoff_seconds: 2
@@ -66,8 +75,8 @@ processes:
     depends_on:
       build-services:
         condition: process_completed
-      infra:
-        condition: process_healthy
+      migrate:
+        condition: process_completed_successfully
     readiness_probe:
       http_get:
         host: 127.0.0.1
