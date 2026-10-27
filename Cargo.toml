@@ -15,9 +15,6 @@ members = ["crates/common",
     "web/server",
 ]
 
-[workspace.package]
-name = "class-coders"
-
 [profile.wasm-release]
 inherits = "release"
 opt-level = "z"

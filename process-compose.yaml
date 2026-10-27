@@ -1,0 +1,77 @@
+# Local dev orchestration: `just dev` (or `process-compose up`) from the repo root.
+version: "0.5"
+
+environment:
+  - "NATS_URL=nats://127.0.0.1:4222"
+  - "DATABASE_URL=postgres://classcoders:classcoders@127.0.0.1:5433/classcoders"
+  - "RUST_LOG=info"
+
+processes:
+  infra:
+    command: docker compose -f deploy/compose.dev.yaml up
+    shutdown:
+      command: docker compose -f deploy/compose.dev.yaml stop
+    readiness_probe:
+      exec:
+        command: >-
+          curl -sf http://127.0.0.1:8222/healthz &&
+          docker compose -f deploy/compose.dev.yaml exec -T postgres pg_isready -U classcoders -d classcoders
+      initial_delay_seconds: 1
+      period_seconds: 2
+      failure_threshold: 30
+
+  # Build every service in one cargo invocation so shared deps compile once and
+  # the services don't fight over the target/ lock.
+  build-services:
+    command: cargo build -p auth -p game-server -p realtime-gateway -p scheduler -p submissions
+    availability:
+      restart: "no"
+
+  # `cargo run` is a no-op rebuild check after build-services, but it means
+  # restarting a service from the TUI also rebuilds it.
+  auth:
+    command: cargo run -p auth
+    depends_on: &service-deps
+      build-services:
+        condition: process_completed_successfully
+      infra:
+        condition: process_healthy
+    availability: &service-availability
+      restart: on_failure
+      backoff_seconds: 2
+
+  game-server:
+    command: cargo run -p game-server
+    depends_on: *service-deps
+    availability: *service-availability
+
+  realtime-gateway:
+    command: cargo run -p realtime-gateway
+    depends_on: *service-deps
+    availability: *service-availability
+
+  scheduler:
+    command: cargo run -p scheduler
+    depends_on: *service-deps
+    availability: *service-availability
+
+  submissions:
+    command: cargo run -p submissions
+    depends_on: *service-deps
+    availability: *service-availability
+
+  # cargo-leptos watches and rebuilds the server + frontend itself.
+  web:
+    command: cargo leptos watch
+    depends_on:
+      build-services:
+        condition: process_completed
+      infra:
+        condition: process_healthy
+    readiness_probe:
+      http_get:
+        host: 127.0.0.1
+        port: 3000
+        path: /
+      period_seconds: 2
+      failure_threshold: 300
